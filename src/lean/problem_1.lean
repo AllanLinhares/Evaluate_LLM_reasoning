@@ -1,6 +1,7 @@
-theorem and_comm_rev (A B : Prop) (h : B ∧ A) : A ∧ B :=
+theorem and_commutativity_elim (h : B ∧ A) : A ∧ B :=
   by
-    cases h with hB hA
-    split
-    · exact hA
-    · exact hB
+    apply And.intro
+    apply And.right at h
+    exact h
+    apply And.left at h
+    exact h
