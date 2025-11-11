@@ -1,7 +1,9 @@
 import json
 import os
+import io
+import contextlib
 from dotenv import load_dotenv
-import google.genai as genai
+from google import genai
 from z3 import *
 
 def z3_solver():
@@ -19,42 +21,40 @@ def z3_solver():
     else:
         print("❌ Not valid. Counterexample:", solver.model())
 
-def connect_gemini(prompt: str):
+def agent_to_code_parser(code: str) -> str:
+    namespace = {}
+    with io.StringIO() as buf, contextlib.redirect_stdout(buf):
+        try:
+            exec(code, namespace)
+            return buf.getvalue()
+        except Exception as e:
+            return f"Error: {e}"
+
+def connect_gemini(problem: str):
     load_dotenv()
     api_key = os.getenv('GOOGLE_API_KEY')
     
     if not api_key:
         print("Error: API key not found!!!")
         return None
-    
+
     client = genai.Client(api_key=api_key)
-    
     response = client.models.generate_content(
         model='gemini-2.5-flash',
-        contents=(
-            "You are a helpful assistant that can help with natural deduction proofs. "
-            "You must respond ONLY with Z3 code. "
-            "DO NOT return anything but the Z3 code. "
-            "No comments, no imports, no explanations, no greetings, no text before or after. "
-            "The Z3 code must check if the conclusion is a logical consequence of the premises. "
-            "Use a Solver, add the premises, add the negation of the conclusion, and check satisfiability. "
-            "ONLY the pure Z3 code to solve the following propositional logic problem: " + prompt
-        ),
+        contents=f"""
+        You are a logic assistant. Solve this using Z3 and Python code only.
+        Return **only runnable Python code**, no explanations.
+        Problem: {problem}
+        """
     )
-    
-    z3_code = response.text.strip()
-    
-    if z3_code.startswith("```"):
-        lines = z3_code.split('\n')
-        z3_code = '\n'.join(lines[1:-1]) if lines[-1].strip() == "```" else '\n'.join(lines[1:])
-    
-    print(prompt)
-    print("--------------------------------")
-    print("Z3 Code received:")
-    print(z3_code)
-    print("--------------------------------")
 
-    z3_solver()
+    code = response.text.strip()
+
+    print("🤖 Code received from Gemini:\n")
+    print(code)
+    print("\n🔍 Executing code...\n")
+    output = agent_to_code_parser(code)
+    print(output)
 
 def retrieve_premisses():
     if os.path.exists('utils/premises.json'):
@@ -66,7 +66,6 @@ def retrieve_premisses():
 def main():
     premisse = retrieve_premisses()["1"]
     connect_gemini(premisse)
-
 
 if __name__ == "__main__":
     main()
