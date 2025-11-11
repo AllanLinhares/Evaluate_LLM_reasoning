@@ -1,46 +1,72 @@
-import os
 import json
+import os
 from dotenv import load_dotenv
-from google import genai
+import google.genai as genai
+from z3 import *
 
-def get_premises():
-    with open('utils/premises.json', 'r', encoding='utf-8') as file:
-        return json.load(file)
+def z3_solver():
+    A = Bool('A')
+    B = Bool('B')
+    hypothesis = And(B, A)
+    goal = And(A, B)
+
+    solver = Solver()
+    solver.add(Not(Implies(hypothesis, goal)))
+    result = solver.check()
+
+    if result == unsat:
+        print("✅ Proven: From (B ∧ A), we can derive (A ∧ B).")
+    else:
+        print("❌ Not valid. Counterexample:", solver.model())
+
+def connect_gemini(prompt: str):
+    load_dotenv()
+    api_key = os.getenv('GOOGLE_API_KEY')
+    
+    if not api_key:
+        print("Error: API key not found!!!")
+        return None
+    
+    client = genai.Client(api_key=api_key)
+    
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=(
+            "You are a helpful assistant that can help with natural deduction proofs. "
+            "You must respond ONLY with Z3 code. "
+            "DO NOT return anything but the Z3 code. "
+            "No comments, no imports, no explanations, no greetings, no text before or after. "
+            "The Z3 code must check if the conclusion is a logical consequence of the premises. "
+            "Use a Solver, add the premises, add the negation of the conclusion, and check satisfiability. "
+            "ONLY the pure Z3 code to solve the following propositional logic problem: " + prompt
+        ),
+    )
+    
+    z3_code = response.text.strip()
+    
+    if z3_code.startswith("```"):
+        lines = z3_code.split('\n')
+        z3_code = '\n'.join(lines[1:-1]) if lines[-1].strip() == "```" else '\n'.join(lines[1:])
+    
+    print(prompt)
+    print("--------------------------------")
+    print("Z3 Code received:")
+    print(z3_code)
+    print("--------------------------------")
+
+    z3_solver()
+
+def retrieve_premisses():
+    if os.path.exists('utils/premises.json'):
+        with open('utils/premises.json', 'r') as file:
+            return json.load(file)
+    else:
+        return None
 
 def main():
-    load_dotenv()
+    premisse = retrieve_premisses()["1"]
+    connect_gemini(premisse)
 
-    api_key = os.getenv("GOOGLE_API_KEY")
-
-    if not api_key:
-        print("Error: GOOGLE_API_KEY not found in environment variables.")
-        print("Please create a .env file with your API key.")
-        return
-
-    client = genai.Client(api_key=api_key)
-
-    premises = get_premises()
-    problem = premises["1"]
-    print(problem)
-    prompt = (f"## Zero-Shot Natural Deduction Task"
-              f"**Role:** You are an expert formal logician and a Lean Theorem Prover assistant. Your task is to provide two solutions for the given logical problem."
-              f"**Goal:** For the given theorem, provide a natural deduction proof AND the corresponding formal proof in Lean 4 syntax."
-              f"**Constraints:**"
-              f"1.  **Do not** use any theorem-proving tactics (`by simp`, `by linarith`, `by tauto`, etc.) in the Lean proof. Only use fundamental tactics like `intro`, `exact`, `apply`, `split`, `refine`, etc., to demonstrate explicit, step-by-step logic. Try to use 'apply' instead of using 'cases' or 'rcases' wherever possible."
-              f"2.  Provide the output in the exact JSON format."
-              f"3.  Do not include any Lean imports (e.g., `import Mathlib.Tactic.Basic`). Assume the necessary core logic environment is set up."
-              f"---"
-              f"**Problem:**"
-              f"**Theorem:** {problem}"
-              f"---")
-
-    response = client.models.generate_content(
-        model='gemini-2.0-flash-exp',
-        contents=prompt
-    )
-
-    print("Gemini response:")
-    print(response.text)
 
 if __name__ == "__main__":
     main()

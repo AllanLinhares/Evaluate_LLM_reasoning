@@ -1,5 +1,5 @@
 {
-    "1": "Give a natural deduction proof of A∧B from hypothesis  B∧A",
+    "1": "Give a natural deduction proof of A∧B from hypothesis B∧A",
     "2": "Give a natural deduction proof of (Q→R)→R from hypothesis Q",
     "3": "Give a natural deduction proof of ¬(A∧B)→(A→¬B)",
     "4": "Give a natural deduction proof of Q∧S from hypotheses (P∧Q)∧R and S∧T.",
@@ -14,5 +14,4 @@
     "13": "Give a natural deduction proof of P→R from hypothesis (P∨Q)→R. How does this differ from a proof of ((P∨Q)→R)→(P→R) ?",
     "14": "Give a natural deduction proof of C→(A∨B)∧C from hypothesis A∨B",
     "15": "Give a natural deduction proof of W∨Y→X∨Z from hypotheses W→X and Y→Z"
-  
 }
