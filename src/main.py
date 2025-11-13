@@ -5,6 +5,7 @@ import contextlib
 from dotenv import load_dotenv
 from google import genai
 from z3 import *
+from prompts import get_z3_verification_prompt
 
 def z3_solver():
     A = Bool('A')
@@ -53,22 +54,23 @@ def connect_gemini(problem: str):
         return None
 
     client = genai.Client(api_key=api_key)
+
+    prompt = get_z3_verification_prompt(problem)
+
     response = client.models.generate_content(
         model='gemini-2.5-flash',
-        contents=f"""
-        You are a logic assistant. Solve this using Z3 and Python code only.
-        Return **only runnable Python code**, no explanations.
-        Problem: {problem}
-        """
+        contents=prompt
     )
 
-    code = remove_code_block_markers(response.text)
-
-    print("🤖 Code received from Gemini:\n")
+    print("Gemini response START ########################################:\n")
     print(response.text.strip())
-    print("\n🔍 Executing code...\n")
+    print("Gemini response END ########################################:\n")
+
+    code = remove_code_block_markers(response.text)
+    print("RUNNING LLM CODE START ########################################:\n")
     output = agent_to_code_parser(code)
     print(output)
+    print("RUNNING LLM CODE START ########################################:\n")
 
 def retrieve_premisses():
     if os.path.exists('utils/premises.json'):
