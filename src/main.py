@@ -21,6 +21,20 @@ def z3_solver():
     else:
         print("❌ Not valid. Counterexample:", solver.model())
 
+def remove_code_block_markers(code: str) -> str:
+    code = code.strip()
+
+    if code.startswith('```'):
+        lines = code.split('\n')
+        if lines[0].startswith('```'):
+            lines = lines[1:]
+        code = '\n'.join(lines)
+
+    if code.endswith('```'):
+        code = code[:-3].rstrip()
+    
+    return code.strip()
+
 def agent_to_code_parser(code: str) -> str:
     namespace = {}
     with io.StringIO() as buf, contextlib.redirect_stdout(buf):
@@ -48,10 +62,10 @@ def connect_gemini(problem: str):
         """
     )
 
-    code = response.text.strip()
+    code = remove_code_block_markers(response.text)
 
     print("🤖 Code received from Gemini:\n")
-    print(code)
+    print(response.text.strip())
     print("\n🔍 Executing code...\n")
     output = agent_to_code_parser(code)
     print(output)
