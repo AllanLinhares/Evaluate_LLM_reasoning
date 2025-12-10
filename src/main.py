@@ -80,8 +80,9 @@ def retrieve_premisses():
         return None
 
 def main():
-    premisse = retrieve_premisses()["1"]
+    premisse = retrieve_premisses()["7"]
     connect_gemini(premisse)
+    
 
 if __name__ == "__main__":
     main()

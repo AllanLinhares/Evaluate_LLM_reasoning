@@ -29,6 +29,6 @@ from z3 import *
 solver = Solver()
 solver.add(Not(Implies(hypothesis, conclusion)))
 result = solver.check()
-[print result based on result == unsat]
+
 """
 
