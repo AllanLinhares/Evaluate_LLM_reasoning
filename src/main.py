@@ -4,6 +4,7 @@ import io
 import contextlib
 from dotenv import load_dotenv
 from google import genai
+from tenacity import retry, wait_exponential_jitter, stop_after_attempt, retry_if_exception_type, RetryError
 from z3 import *
 from prompts import get_z3_verification_prompt
 
@@ -36,6 +37,27 @@ def remove_code_block_markers(code: str) -> str:
     
     return code.strip()
 
+def is_valid_formula(formula: str) -> bool:
+
+    if not formula or not isinstance(formula, str):
+        return False
+    
+    formula = formula.strip()
+    
+    #se está vazio
+    if not formula:
+        return False
+    
+    if formula.startswith('//') or formula == "//":
+        return False
+    
+    #fórmulas válidas
+    valid_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz∧∨→¬↔&|()[]{} ,→¬')
+    if not any(c in formula for c in valid_chars):
+        return False
+    
+    return True
+
 def agent_to_code_parser(code: str) -> str:
     namespace = {}
     with io.StringIO() as buf, contextlib.redirect_stdout(buf):
@@ -56,11 +78,28 @@ def connect_gemini(problem: str):
     client = genai.Client(api_key=api_key)
 
     prompt = get_z3_verification_prompt(problem)
-
-    response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=prompt
+    
+    @retry(
+        wait=wait_exponential_jitter(),
+        stop=stop_after_attempt(6),
+        retry=retry_if_exception_type(genai.errors.ServerError),
     )
+    def _generate_with_retry(client, prompt):
+        return client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+
+    try:
+        response = _generate_with_retry(client, prompt)
+    except RetryError as e:
+        last = e.last_attempt.exception() if hasattr(e, 'last_attempt') else e
+        print(f"Error: exhausted retries when calling Gemini: {last}")
+        return None
+    
+    except genai.errors.ServerError as e:
+        print(f"ServerError from Gemini: {e}")
+        return None
 
     print("Gemini response START ########################################:\n")
     print(response.text.strip())
@@ -80,7 +119,22 @@ def retrieve_premisses():
         return None
 
 def main():
-    premisse = retrieve_premisses()["1"]
+    premisses = retrieve_premisses()
+    if not premisses:
+        print("Error: Could not load premises from utils/premises.json")
+        return
+    
+    premisse = premisses.get("7")
+    
+    if not premisse:
+        print("Error: Premise not found in premises.json")
+        return
+    
+    if not is_valid_formula(premisse):
+        print(f"Error: Premise '{premisse}' is not a valid logical formula.")
+        print("Please provide a valid logical formula (e.g., 'A ∧ B → C').")
+        return
+    
     connect_gemini(premisse)
 
 if __name__ == "__main__":
