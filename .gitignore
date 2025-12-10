@@ -1,5 +1,6 @@
 venv/
 __pycache__/
+notebooks/
 *.pyc
 .env
 utils/devplan.md

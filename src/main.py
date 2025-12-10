@@ -4,6 +4,7 @@ import io
 import contextlib
 from dotenv import load_dotenv
 from google import genai
+from tenacity import retry, wait_exponential_jitter, stop_after_attempt, retry_if_exception_type, RetryError
 from z3 import *
 from prompts import get_z3_verification_prompt
 
@@ -56,11 +57,29 @@ def connect_gemini(problem: str):
     client = genai.Client(api_key=api_key)
 
     prompt = get_z3_verification_prompt(problem)
-
-    response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=prompt
+    
+    @retry(
+        wait=wait_exponential_jitter(),
+        stop=stop_after_attempt(6),
+        retry=retry_if_exception_type(genai.errors.ServerError),
     )
+    def _generate_with_retry(client, prompt):
+        return client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+
+    try:
+        response = _generate_with_retry(client, prompt)
+    except RetryError as e:
+        # Tenacity wraps the last exception inside RetryError
+        last = e.last_attempt.exception() if hasattr(e, 'last_attempt') else e
+        print(f"Error: exhausted retries when calling Gemini: {last}")
+        return None
+    
+    except genai.errors.ServerError as e:
+        print(f"ServerError from Gemini: {e}")
+        return None
 
     print("Gemini response START ########################################:\n")
     print(response.text.strip())
