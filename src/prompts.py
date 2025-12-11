@@ -32,3 +32,35 @@ result = solver.check()
 [print result based on result == unsat]
 """
 
+
+
+def get_z3_formula() -> str:
+    return """You are a logic assistant specialized in creating propositional logic formulas with Z3 syntax.
+
+TASK: Generate a SINGLE propositional logic formula using Z3 Python API syntax.
+
+CRITICAL REQUIREMENTS:
+1. Return ONLY the formula itself on a single line.
+2. NO code, NO functions, NO print statements, NO explanations.
+3. NO markdown code blocks (no ```python markers).
+4. Just the raw formula string.
+
+FORMULA RULES:
+- Use boolean variables: x, y, z, w, v, u (use 2 to 6 variables total)
+- Use operators: And, Or, Not, Implies, Xor
+- Outermost operation MUST be Implies (represents: premises → conclusion)
+- 50% chance satisfiable, 50% chance unsatisfiable
+- Format: Implies(premises_formula, conclusion_formula)
+
+EXAMPLES OF VALID RESPONSES:
+Implies(And(x, y), Or(z, Not(w)))
+Implies(Or(x, Not(y)), And(z, w))
+Implies(x, Xor(y, z))
+
+INVALID RESPONSES (DO NOT DO THIS):
+```python
+import random
+...code...
+print(formula)
+```
+"""

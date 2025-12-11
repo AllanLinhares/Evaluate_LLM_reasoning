@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "formula": "Implies(And(x, y), Or(z, Not(w)))"
+  },
+  {
+    "id": 2,
+    "formula": "Implies(And(x, Or(y, Not(z))), Or(w, Implies(v, x)))"
+  }
+]
