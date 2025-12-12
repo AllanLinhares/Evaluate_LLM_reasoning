@@ -44,7 +44,7 @@ CRITICAL REQUIREMENTS:
 4. Just the raw formula string.
 
 FORMULA RULES:
-- Use boolean variables: x, y, z, w, v, u (use at least 8 different variables)
+- Use boolean variables: x, y, z, w, v, u (use at least 14 different variables)
 - Use operators: And, Or, Not, Implies, Xor
 - Outermost operation MUST be Implies (represents: premises → conclusion)
 - 50% chance satisfiable, 50% chance unsatisfiable
@@ -84,6 +84,8 @@ Requirements:
 3. Use Lean 4 syntax and only fundamental tactics (e.g., `intro`, `cases`, `exact`, `apply`, `And.intro`).
 4. Do NOT use high-level automation tactics such as `simp`, `tauto`, `linarith`, or similar.
 5. Do NOT include `import` statements; assume the core environment is available.
+6 .Do NOT include any explanations, comments, or markdown formatting. Focus solely on the theorem and its proof.
+
 IMPORTANT:
 - Return ONLY the Lean 4 theorem source (no explanations, no comments, no markdown, no fences).
 - The code must be valid Lean 4 and ready to save into a `.lean` file and check with `lean --make`.

@@ -152,19 +152,43 @@ def request_lean_proof(problem: str) -> str:
         print(f"ServerError from Gemini: {e}")
         return None
 
+def execute_generated_code(code: str) -> str:
+    # Remove formatação markdown se presente
+    clean_code = code.strip()
+    if clean_code.startswith("```python"):
+        clean_code = clean_code.replace("```python", "", 1)
+    elif clean_code.startswith("```"):
+        clean_code = clean_code.replace("```", "", 1)
+    
+    if clean_code.endswith("```"):
+        clean_code = clean_code[:-3]
+    
+    clean_code = clean_code.strip()
+    f = io.StringIO()
+    try:
+        with contextlib.redirect_stdout(f):
+            exec(clean_code, globals())
+        return f.getvalue()
+    except Exception as e:
+        return f"Erro ao executar o código gerado: {e}"
+
 def main():
     logicProblem = askGeminiLogicProblem()
     z3LLMCode = solveProblemWithZ3(logicProblem)
+    execution_result = execute_generated_code(z3LLMCode)
     evaluation = ask_gemini_to_solve_z3_code(z3LLMCode)
     lean_prompt = request_lean_proof(logicProblem)
 
-    print(logicProblem)
+    print(f"▶️ Problema gerado: {logicProblem}")
     print("-----")
-    print(z3LLMCode)
+    print(f"▶️ Código Z3 gerado:\n{z3LLMCode}")
     print("-----")
-    print(evaluation)
+    print("▶️ Resultado da execução local:")
+    print(execution_result)
     print("-----")
-    print(lean_prompt)
+    print(f"▶️ Resultado da execução da LLM:\n{evaluation}")
+    print("-----")
+    print(f"▶️ Prova formal em Lean 4:\n{lean_prompt}")
 
 if __name__ == "__main__":
     main()
