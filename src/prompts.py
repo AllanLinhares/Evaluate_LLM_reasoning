@@ -20,8 +20,9 @@ IMPORTANT:
 - Use clean, organized code with proper Z3 syntax
 - Import only what is necessary from z3
 - The code must be directly runnable
+- The code MUST follow the Example structure below exactly (define variables, build hypothesis/conclusion, create Solver, add Not(Implies(...)), call `result = solver.check()`), and at the end MUST print exactly one of the strings: `unsat`, `sat`, or `unknown` (all lowercase). No additional prints or text may be included.
 
-Example structure:
+Example structure (required output behavior):
 from z3 import *
 [define variables]
 [build hypothesis]
@@ -29,9 +30,13 @@ from z3 import *
 solver = Solver()
 solver.add(Not(Implies(hypothesis, conclusion)))
 result = solver.check()
-[print result based on result == unsat]
+if result == unsat:
+    print('unsat')
+elif result == sat:
+    print('sat')
+else:
+    print('unknown')
 """
-
 
 
 def get_z3_formula() -> str:
@@ -63,4 +68,53 @@ import random
 ...code...
 print(formula)
 ```
+"""
+
+
+def get_lean_proof_prompt(problem: str) -> str:
+        return f"""You are a logic assistant specialized in formal proofs using Lean 4.
+
+Your task is to provide a Lean 4 formal proof for the given logical problem.
+
+Problem: {problem}
+
+Requirements:
+1. Parse the problem to identify the hypotheses and the conclusion.
+2. Produce a single Lean 4 `theorem` that proves the conclusion from the hypotheses.
+3. Use Lean 4 syntax and only fundamental tactics (e.g., `intro`, `cases`, `exact`, `apply`, `And.intro`).
+4. Do NOT use high-level automation tactics such as `simp`, `tauto`, `linarith`, or similar.
+5. Do NOT include `import` statements; assume the core environment is available.
+
+IMPORTANT:
+- Return ONLY the Lean 4 theorem source (no explanations, no comments, no markdown, no fences).
+- The code must be valid Lean 4 and ready to save into a `.lean` file and check with `lean --make`.
+- Format: `theorem <name> (<params>) : <statement> := by` followed by the proof.
+
+Example (Lean 4):
+theorem and_comm (A B : Prop) (h : A ∧ B) : B ∧ A := by
+    cases h with
+    | intro hA hB =>
+        exact And.intro hB hA
+
+Return only the theorem code.
+"""
+
+
+def get_counterexample_prompt(problem: str) -> str:
+    return f"""You are a logic assistant. Given the following propositional logic problem, provide a concrete counterexample using Z3 Python assignment syntax (only the assignments, no explanations).
+
+Problem: {problem}
+
+Requirements:
+1. Return ONLY Z3-style Python assignments that set each propositional variable to a boolean value.
+2. Use `BoolVal(True)` / `BoolVal(False)` or `True`/`False` for values.
+3. Do NOT include explanations, markdown, or any additional text — only the assignment lines.
+4. Use variable names exactly as used in the problem (e.g., A, B, x, y).
+
+Examples (valid responses):
+x = BoolVal(True)
+y = BoolVal(False)
+or
+x = True
+y = False
 """

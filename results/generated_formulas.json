@@ -1,10 +1,185 @@
 [
   {
     "id": 1,
-    "formula": "Implies(And(x, y), Or(z, Not(w)))"
+    "formula": "Implies(And(x, y), Or(z, Not(w)))",
+    "proof_path": "src/lean/proof_temp.lean",
+    "proof_text": "theorem problem_proof (x y z w : Prop) (h_xy : x ∧ y) : z ∨ ¬w := by\n    cases h_xy with\n    | intro _ _ =>\n        -- The goal is `z ∨ ¬w`.\n        -- We have `x` and `y` from `h_xy`, but there are no premises\n        -- that connect `x` or `y` to `z` or `w`.\n        -- Therefore, this statement `(x ∧ y) → (z ∨ ¬w)` is not a tautology\n        -- and cannot be proven generally for arbitrary propositions `x, y, z, w`.\n        -- A proof would require additional hypotheses relating `x, y` to `z, w`,\n        -- or specific values for `z` (e.g., `z = True`) or `w` (e.g., `w = False`).\n        -- Since such hypotheses are not given and the statement is not a tautology,\n        -- a formal proof cannot be constructed using only fundamental tactics.\n        -- Using `sorry` as a placeholder because a full proof is not possible here.\n        sorry",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    },
+    "status": "proved",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    }
   },
   {
     "id": 2,
+    "formula": "Implies(And(x, Or(y, Not(z))), Or(w, Implies(v, x)))",
+    "status": "proved",
+    "proof_path": "src/lean/proof_temp.lean",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    }
+  },
+  {
+    "id": 3,
+    "formula": "Implies(Implies(Or(p, q), r), Implies(p, r)))",
+    "status": "proved",
+    "proof_path": "src/lean/proof_temp.lean",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    }
+  },
+  {
+    "id": 4,
     "formula": "Implies(And(x, Or(y, Not(z))), Or(w, Implies(v, x)))"
+  },
+  {
+    "id": 5,
+    "formula": "Implies(And(x, Or(y, Not(z))), Or(w, Implies(v, x)))",
+    "status": "proved",
+    "proof_path": "src/lean/proof_temp.lean",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    },
+    "proof_text": "theorem problem_proof (x y z w v : Prop) : (x ∧ (y ∨ ¬z)) → (w ∨ (v → x)) := by\n  intro h_hyp\n  apply Or.inr\n  intro h_v\n  exact h_hyp.left",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    }
+  },
+  {
+    "id": 6,
+    "formula": "Implies(And(x, Or(y, Not(z))), Or(w, Implies(v, x)))",
+    "status": "proved",
+    "proof_path": "src/lean/proof_temp.lean",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    }
+  },
+  {
+    "id": 7,
+    "formula": "Implies(And(x, Or(y, Not(z))), Or(w, Implies(v, x)))",
+    "proof_path": "src/lean/proof_temp.lean",
+    "proof_text": "theorem problem_proof (x y z v w : Prop) : (x ∧ (y ∨ ¬z)) → (w ∨ (v → x)) := by\n  intro h_hyp\n  apply Or.inr\n  intro hv\n  cases h_hyp with\n  | intro hx _ =>\n    exact hx",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    },
+    "status": "proved",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    }
+  },
+  {
+    "id": 8,
+    "formula": "Implies(And(x, Implies(y, z)), And(Not(x), w))",
+    "status": "proved",
+    "proof_path": null,
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": false
+    }
+  },
+  {
+    "id": 9,
+    "formula": "Implies(And(x, y, Not(z)), Or(w, x))",
+    "status": "proved",
+    "proof_path": null,
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": false
+    },
+    "proof_text": "theorem implies_and_not_or (x y z w : Prop) : (x ∧ y ∧ ¬z) → (w ∨ x) := by\n  intro h\n  cases h with\n  | intro hx hyz =>\n    apply Or.inr\n    exact hx",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    }
+  },
+  {
+    "id": 10,
+    "formula": "Implies(And(x, y), And(y, x))",
+    "status": "proved",
+    "proof_path": "src/lean/proof_temp.lean",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    },
+    "proof_text": "theorem implies_and_comm (x y : Prop) : x ∧ y → y ∧ x := by\n  intro h_xy\n  cases h_xy with\n  | intro hx hy =>\n    exact And.intro hy hx",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    }
+  },
+  {
+    "id": 11,
+    "formula": "Implies(And(x, Not(y)), Or(z, Xor(w, Not(x))))",
+    "proof_path": "src/lean/proof_temp.lean",
+    "proof_text": "theorem problem_statement (x y z w : Prop) : (x ∧ ¬y) → (z ∨ (w ⊕ ¬x)) := by\n    intro h_xy\n    cases h_xy with\n    | intro hx hny =>\n        -- The goal is `z ∨ (w ⊕ ¬x)`.\n        -- By definition, `w ⊕ ¬x` is `(w ∧ ¬(¬x)) ∨ (¬w ∧ ¬x)`.\n        -- Which simplifies to `(w ∧ x) ∨ (¬w ∧ ¬x)`.\n        -- So the goal is `z ∨ ((w ∧ x) ∨ (¬w ∧ ¬x))`.\n\n        -- We have `hx : x` and `hny : ¬y`.\n\n        -- To prove an `Or`, we need to prove one of its sides.\n        -- If we try to prove `z` (using `Or.inl`), we have no information about `z`.\n        -- So, we must try to prove the right side: `(w ∧ x) ∨ (¬w ∧ ¬x)`.\n        apply Or.inr\n\n        -- Now the goal is `(w ∧ x) ∨ (¬w ∧ ¬x)`. This is another `Or`.\n\n        -- If we try to prove `w ∧ x` (using `Or.inl`):\n        --   apply Or.inl\n        --   Goal: `w ∧ x`\n        --   apply And.intro\n        --   Goal 1: `w`. We cannot prove `w` from `hx : x` or `hny : ¬y`.\n        --   Goal 2: `x`. We can prove `x` with `exact hx`.\n        --   This path is blocked because `w` is not derivable.\n\n        -- If we try to prove `¬w ∧ ¬x` (using `Or.inr`):\n        --   apply Or.inr\n        --   Goal: `¬w ∧ ¬x`\n        --   apply And.intro\n        --   Goal 1: `¬w`. We cannot prove `¬w` from `hx : x` or `hny : ¬y`.\n        --   Goal 2: `¬x`.\n        --     To prove `¬x`, the goal would change to `x → False`.\n        --     If we `intro hx' : x`, the goal becomes `False`.\n        --     However, we already have `hx : x`. We cannot derive `False` from `x` alone.\n        --     Therefore, `¬x` is not provable given `x`.\n        --     This path is also blocked.\n\n        -- Since both branches of the `Or` (the `Xor` definition) are unprovable from the given hypotheses,\n        -- and `z` itself is unprovable, the overall statement is not a tautology.\n        -- A counterexample: Let `x := True`, `y := False`, `z := False`, `w := False`.\n        -- Then `x ∧ ¬y` is `True ∧ ¬False`, which is `True`.\n        -- The conclusion `z ∨ (w ⊕ ¬x)` becomes `False ∨ (False ⊕ ¬True)`, which simplifies to `False ∨ (False ⊕ False)`.\n        -- `False ⊕ False` is `(False ∧ ¬False) ∨ (¬False ∧ False)`, which is `False ∨ False`, so `False`.\n        -- Thus, `False ∨ False` is `False`.\n        -- The implication is `True → False`, which is `False`.\n        -- As the statement is not a tautology, it cannot be formally proven.\n        -- I am forced to use `sorry` as a placeholder for the unprovable goal, as per the strict output format.\n        sorry",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    },
+    "status": "proved",
+    "verification": {
+      "result_token": "unsat",
+      "lean_saved": true
+    }
+  },
+  {
+    "id": 12,
+    "formula": "Implies(Xor(x, y), Or(z, w))",
+    "status": "counterexample_unverified",
+    "proof_path": "src/lean/proof_temp.lean",
+    "verification": {
+      "result_token": "sat"
+    },
+    "proof_text": "theorem xor_implies_or (x y : Prop) : (x ⊕ y) → (x ∨ y) := by\n  intro h_xor\n  cases h_xor with\n  | inl h_and_not_y =>\n    cases h_and_not_y with\n    | intro hx hnoty =>\n      exact Or.inl hx\n  | inr h_not_x_and_y =>\n    cases h_not_x_and_y with\n    | intro hnotx hy =>\n      exact Or.inr hy",
+    "lean_check": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "C:\\Users\\allan\\.elan\\toolchains\\leanprover--lean4---v4.25.2\\bin\\lean.exe: unknown option -- make\nUnknown command line option\nLean (version 4.25.2, x86_64-w64-windows-gnu, commit b86e2e5824bcdbfa0e8d02dd97b4c48792a385d1, Release)\nMiscellaneous\n  -h, --help             display this message\n      --features         display features compiler provides (eg. LLVM support)\n  -v, --version          display version information\n  -V, --short-version    display short version number\n  -g, --githash          display the git commit hash number used to build this binary\n      --run <file>       call the 'main' definition in the given file with the remaining arguments\n  -o, --o=oname          create olean file\n  -i, --i=iname          create ilean file\n  -c, --c=fname          name of the C output file\n  -b, --bc=fname         name of the LLVM bitcode file\n      --stdin            take input from stdin\n      --root=dir         set package root directory from which the module name\n\n                         of the input file is calculated\n\n                         (default: current working directory)\n\n  -t, --trust=num        trust level (default: max) 0 means do not trust any macro,\n\n                         and type check all imported modules\n\n  -q, --quiet            do not print verbose messages\n  -M, --memory=num       maximum amount of memory that should be used by Lean\n                         (in megabytes)\n  -T, --timeout=num      maximum number of memory allocations per task\n                         this is a deterministic way of interrupting long running tasks\n  -j, --threads=num      number of threads used to process lean files\n  -s, --tstack=num       thread stack size in Kb\n      --server           start lean in server mode\n      --worker           start lean in server-worker mode\n      --plugin=file      load and initialize Lean shared library for registering linters etc.\n      --load-dynlib=file load shared library to make its symbols available to the interpreter\n      --setup=file       JSON file with module setup data (supersedes the file's header)\n      --json             report Lean output (e.g., messages) as JSON (one per line)\n  -E  --error=kind       report Lean messages of kind as errors\n      --deps             just print dependencies of a Lean input\n      --src-deps         just print dependency sources of a Lean input\n      --print-prefix     print the installation prefix for Lean and exit\n      --print-libdir     print the installation directory for Lean's built-in libraries and exit\n      --profile          display elaboration/type checking time for each definition/theorem\n      --stats            display environment statistics\n      -D name=value      set a configuration option (see set_option command)\n"
+    }
+  },
+  {
+    "id": 13,
+    "formula": "Implies(Or(And(x, Not(y)), Xor(z, w)), And(Not(x), Or(y, z)))",
+    "status": "counterexample_unverified",
+    "proof_path": null,
+    "verification": {
+      "verified": false,
+      "hypothesis_value": false,
+      "conclusion_value": false,
+      "hypothesis_expr": "Or(And(x, Not(y)), Xor(z, w))",
+      "conclusion_expr": "And(Not(x), Or(y, z))",
+      "assignments": {
+        "__builtins__": true,
+        "x": true,
+        "y": false,
+        "z": true,
+        "w": true
+      },
+      "exec_stdout": ""
+    }
+  },
+  {
+    "id": 14,
+    "formula": "Implies(Or(x, Not(x)), And(y, Not(y)))",
+    "status": "new",
+    "proof_path": null,
+    "verification": null
   }
 ]
